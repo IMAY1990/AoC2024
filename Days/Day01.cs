@@ -8,24 +8,18 @@ using System.Threading.Tasks;
 
 namespace AoC2024.Days
 {
-    internal class Day1
+    internal class Day1 : Day
     {
-        private Input input { get; set; }
         private List<int> first { get; set; }
         private List<int> second { get; set; }
-        public Day1() { }
 
-        public Day1(int day) 
+        public Day1(int day) : base(day)
         {
-            this.input = new Input(day);
             this.first = new List<int>();
             this.second = new List<int>();
-
-            DoPart1();
-            DoPart2();
         }
 
-        void DoPart1()
+        public override void DoPart1()
         {
             foreach (var row in input.Rows)
             {
@@ -46,7 +40,7 @@ namespace AoC2024.Days
             Console.WriteLine(totalDiff);
         }
 
-        void DoPart2()
+        public override void DoPart2()
         {
             int similatiryScore = 0;
             foreach (int entry in first)
