@@ -71,5 +71,20 @@ namespace AoC2024.Generic
 
             return intGrid;
         }
+
+        internal char[,] GetCharGrid()
+        {
+            char[,] charGrid = new char[this.Rows[0].Length, this.Rows.Count];
+
+            for (int j = 0; j < this.Rows.Count; j++)
+            {
+                for (int i = 0; i < this.Rows[j].Length; i++)
+                {
+                    charGrid[i, j] = this.Rows[j][i];
+                }
+            }
+
+            return charGrid;
+        }
     }
 }
