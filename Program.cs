@@ -49,6 +49,18 @@ namespace AoC2024
                 case 12:
                     day = new Day12(dayNr);
                     break;
+                case 13:
+                    day = new Day13(dayNr);
+                    break;
+                case 14:
+                    //day = new Day14(dayNr);
+                    break;
+                case 15:
+                    //day = new Day15(dayNr);
+                    break;
+                case 16:
+                    day = new Day16(dayNr);
+                    break;
                 default:
                     Console.WriteLine("invalid day");
                     break;
