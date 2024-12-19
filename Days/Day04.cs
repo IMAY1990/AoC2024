@@ -27,7 +27,6 @@ namespace AoC2024.Days
         {
             int xmasCounter = 0;
             input.Rows = input.AddPadding(3,'.');
-            int testcounter1 = 0;
             for (int j = 0; j < input.Rows.Count(); j++)
             {
                 for (int i = 0; i < input.Rows[j].Length; i++)
@@ -35,16 +34,10 @@ namespace AoC2024.Days
                     
                     if (input.Rows[j][i] == 'X')
                     {
-                        testcounter1++;
                         foreach (var vector in vectorList)
                         {
                             int toAdd = CheckInputVsVector(vector, i, j);
-                            xmasCounter += toAdd;
-                            if (toAdd == 1)
-                            {
-                                Console.WriteLine($"Upped counter for X nr. {testcounter1}, position {i-2},{j-2}. Direction {vector}");
-                            }
-                            
+                            xmasCounter += toAdd;                            
                         }
 
                     }
@@ -56,7 +49,19 @@ namespace AoC2024.Days
 
         public override void DoPart2()
         {
+            int xmasCounter = 0;
+            for (int j = 0; j < input.Rows.Count(); j++)
+            {
+                for (int i = 0; i < input.Rows[j].Length; i++)
+                {
+                    if (input.Rows[j][i] == 'A')
+                    {
+                        xmasCounter += CheckforXmas((i, j));
+                    }
+                }
+            }
 
+            Console.WriteLine(xmasCounter);
         }
 
        int CheckInputVsVector(Vector2 vector, int beginX, int beginY)
@@ -70,6 +75,25 @@ namespace AoC2024.Days
             if (input.Rows[beginY + (3 * vertical)][beginX + (3 * horizontal)] != 'S')
                 return 0;
             return 1;
+        }
+
+        int CheckforXmas((int X, int Y) aPositie)
+        {
+            int nrOfXmas = 0;
+            char tocheck1 = input.Rows[aPositie.Y + 1][aPositie.X - 1];
+            char tocheck2 = input.Rows[aPositie.Y - 1][aPositie.X + 1];
+            if (tocheck1 == 'M' && tocheck2 == 'S' || tocheck1 == 'S' && tocheck2 == 'M')
+            {
+                char tocheck3 = input.Rows[aPositie.Y - 1][aPositie.X - 1];
+                char tocheck4 = input.Rows[aPositie.Y + 1][aPositie.X + 1];
+
+                if (tocheck3 == 'M' && tocheck4 == 'S' || tocheck3 == 'S' && tocheck4 == 'M')
+                {
+                    nrOfXmas++;
+                }
+            }
+
+            return nrOfXmas;
         }
     }
 }
