@@ -1,6 +1,7 @@
 ﻿using AoC2024.Generic.HelperClasses;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -11,161 +12,165 @@ namespace AoC2024.Days
 {
     internal class Day6 : Day
     {
-        char[,] inputGrid;
-        Point currentDirection = new Point();
-        WindDirection currentDirectionLetter;
-        MovingObject myLocation;
-        Point currentPosition;
+        char[,] inputGridP1;
+        MovingObject guard;
         bool leftGrid = false;
-        Dictionary<(int x, int y), List<WindDirection>> visitedInDirections = new Dictionary<(int x, int y), List<WindDirection>>();
+        int width = 0, height = 0;
+        List<(int X, int Y)> visitedPositions = new List<(int X, int Y)>();
 
         public Day6(int day) : base(day)
         {
-            inputGrid = input.GetCharGrid();
+            inputGridP1 = input.GetCharGrid();
         }
 
         public override void DoPart1()
         {
-            GetStart();
-            while (!leftGrid) 
+            width = inputGridP1.GetLength(0);
+            height = inputGridP1.GetLength(1);
+            guard = GetStart(inputGridP1);
+
+            while (!leftGrid)
             {
-                TakeNextStep();
+                TakeNextStep(inputGridP1);
+                if (!visitedPositions.Contains(guard.position))
+                {
+                    visitedPositions.Add(guard.position);
+                }
+                
             }
 
-            int totalpassed = 0;
-            foreach (var item in inputGrid)
+            int xCounter = 0;
+            foreach (var item in inputGridP1)
             {
                 if (item == 'X')
                 {
-                    totalpassed++;
+                    xCounter++;
                 }
             }
-            Console.WriteLine(totalpassed);
+            Console.WriteLine(xCounter);
+            Console.WriteLine(visitedPositions.Count);
+            //DrawMap();
         }
 
         public override void DoPart2()
-        {
-        }
+        {            
+            int options = 0;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
-        private void GetStart()
-        {
-            bool foundStart = false;
-            for (int j = 0; j < inputGrid.GetLength(1); j++)
+            options = 0;
+            int counter = 0;
+            foreach (var position in visitedPositions)
             {
-                for (int i = 0; i < inputGrid.GetLength(0); i++)
+                counter++;
+                //Console.WriteLine(counter);
+                char[,] inputGridP2 = input.GetCharGrid();
+                guard = GetStart(inputGridP2);
+                //Console.WriteLine($"Blocking: ({position.X},{position.Y})");
+                Dictionary<(int X, int Y), List<WindDirection>> visitedInDirections = new Dictionary<(int X, int Y), List<WindDirection>>();
+                leftGrid = false;
+
+                if (guard.position == position)
+                    continue;
+                if (inputGridP2[position.X, position.Y] == '#')
+                    continue;
+
+                inputGridP2[position.X, position.Y] = '#';
+                bool alreadyVisitedInDirection = 
+                    visitedInDirections.ContainsKey(guard.position) ?
+                    visitedInDirections[guard.position].Contains(guard.direction.windDirection) : 
+                    false;
+
+                while (!leftGrid && !alreadyVisitedInDirection)
                 {
-                    if (inputGrid[i, j] == '^')
-                    {
-                        myLocation = new MovingObject(new Point(0, -1), WindDirection.N);
-                        currentDirection = new Point(0, -1);
-                        currentDirectionLetter = WindDirection.N;
-                        currentPosition = new Point(i, j);
-                        foundStart = true;
-                    }
-                    if (inputGrid[i, j] == '>')
-                    {
-                        myLocation = new MovingObject(new Point(1, 0), WindDirection.E);
-                        currentDirection = new Point(1, 0);
-                        currentDirectionLetter = WindDirection.E;
-                        currentPosition = new Point(i, j);
-                        foundStart = true;
-                    }
-                    if (inputGrid[i, j] == 'v')
-                    {
-                        myLocation = new MovingObject(new Point(0, 1), WindDirection.S);
-                        currentDirection = new Point(0, 1);
-                        currentDirectionLetter = WindDirection.S;
-                        currentPosition = new Point(i, j);
-                        foundStart = true;
-                    }
-                    if (inputGrid[i, j] == '<')
-                    {
-                        myLocation = new MovingObject(new Point(-1, 0), WindDirection.W);
-                        currentDirection = new Point(-1, 0);
-                        currentDirectionLetter = WindDirection.W;
-                        currentPosition = new Point(i, j);
-                        foundStart = true;
-                    }
-                    if (foundStart) break;
+                    if (visitedInDirections.ContainsKey(guard.position))
+                        if (visitedInDirections[guard.position].Contains(guard.direction.windDirection))
+                            alreadyVisitedInDirection = true;
+                        else
+                            visitedInDirections[guard.position].Add(guard.direction.windDirection);
+                    else
+                        visitedInDirections.Add(guard.position, new List<WindDirection>() { guard.direction.windDirection });
+                    TakeNextStep(inputGridP2);
                 }
-                if (foundStart) break;
-            }           
+
+                
+                //DrawMap(inputGridP2);
+                //Console.WriteLine();
+
+                if (!leftGrid)
+                {
+                    options++;
+                }
+            }
+            Console.WriteLine($"Part 2: {options} out of {counter} tried");
         }
-
-        private void GetNextDirection()
+        
+        private MovingObject GetStart(char[,] inputGrid)
         {
-            //switch (currentDirectionLetter)
-            //{
-            //    case WindDirection.N:
-            //        currentDirectionLetter = WindDirection.E;
-            //        currentDirection.X = 1;
-            //        currentDirection.Y = 0;
-            //        break;
-            //    case WindDirection.E:
-            //        currentDirectionLetter = WindDirection.S;
-            //        currentDirection.X = 0;
-            //        currentDirection.Y = 1;
-            //        break;
-            //    case WindDirection.S:
-            //        currentDirectionLetter = WindDirection.W;;
-            //        currentDirection.X = -1;
-            //        currentDirection.Y = 0;
-            //        break;
-            //    case WindDirection.W:
-            //        currentDirectionLetter = WindDirection.N;
-            //        currentDirection.X = 0;
-            //        currentDirection.Y = -1;
-            //        break;
-            //    default:
-            //        break;
-            //}
+            MovingObject newGuard = new MovingObject();
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (inputGrid[x,y] == '^')
+                    {
+                        return new MovingObject() { direction = new Direction(WindDirection.N, (0, -1)), position = (x,y) };
+                    }
+                    if (inputGrid[x, y] == '>')
+                    {
+                        return new MovingObject() { direction = new Direction(WindDirection.E, (1, 0)), position = (x, y) };
+                    }
+                    if (inputGrid[x, y] == 'v')
+                    {
+                        return new MovingObject() { direction = new Direction(WindDirection.S, (0, 1)), position = (x, y) };
+                    }
+                    if (inputGrid[x, y] == '<')
+                    {
+                        return new MovingObject() { direction = new Direction(WindDirection.W, (-1, 0)), position = (x, y) };
+                    }
+                }
+            }
 
-            //switch (myLocation.direction)
-            //{
-            //    case WindDirection.N:
-            //        myLocation.direction = WindDirection.E;
-            //        currentDirection.X = 1;
-            //        currentDirection.Y = 0;
-            //        break;
-            //    case WindDirection.E:
-            //        myLocation.direction = WindDirection.S;
-            //        currentDirection.X = 0;
-            //        currentDirection.Y = 1;
-            //        break;
-            //    case WindDirection.S:
-            //        myLocation.direction = WindDirection.W; ;
-            //        currentDirection.X = -1;
-            //        currentDirection.Y = 0;
-            //        break;
-            //    case WindDirection.W:
-            //        myLocation.direction = WindDirection.N;
-            //        currentDirection.X = 0;
-            //        currentDirection.Y = -1;
-            //        break;
-            //    default:
-            //        break;
-            //}
+            return newGuard;
         }
-
-        private void TakeNextStep()
+        private void TakeNextStep(char[,] grid)
         {
-            inputGrid[currentPosition.X, currentPosition.Y] = 'X';
-            Point nextPosition = new Point(currentPosition.X + currentDirection.X, currentPosition.Y + currentDirection.Y);
-            if (nextPosition.X < 0 || nextPosition.Y < 0 || nextPosition.X > inputGrid.GetLength(0) - 1 || nextPosition.Y > inputGrid.GetLength(1) - 1)
+            //Mark current tile
+            grid[guard.position.X, guard.position.Y] = 'X';
+
+            //check if leftGrid
+            if (guard.position.X + guard.direction.direction.X < 0 || 
+                guard.position.X + guard.direction.direction.X > width - 1 ||
+                guard.position.Y + guard.direction.direction.Y < 0 ||
+                guard.position.Y + guard.direction.direction.Y > height - 1)
             {
                 leftGrid = true;
+                return;
             }
-            else if (inputGrid[nextPosition.X, nextPosition.Y] == '#')
-            {
-                GetNextDirection();
-            }
-            else
-            {
-                currentPosition = nextPosition;
-                myLocation.position = nextPosition;
 
+            //Check if next tile is wall
+            if (grid[guard.position.X + guard.direction.direction.X, guard.position.Y + guard.direction.direction.Y] == '#')
+            {
+                guard.direction = guard.GetNextDirection();
+                return;
             }
-            
+
+            //Step forward
+            guard.position = (guard.position.X + guard.direction.direction.X, guard.position.Y + guard.direction.direction.Y);
+            return;
+        }
+
+        private void DrawMap(char[,] grid)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < width; i++)
+                {
+                    sb.Append(grid[i, j]);
+                }
+                Console.WriteLine(sb.ToString());
+            }
         }
     }
 }

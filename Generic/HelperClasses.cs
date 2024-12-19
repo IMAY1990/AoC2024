@@ -16,6 +16,14 @@ namespace AoC2024.Generic
         {
             public WindDirection windDirection = new WindDirection();
             public (int X, int Y) direction = (0, 0);
+
+            public Direction(WindDirection windDirection, (int X, int Y) direction)
+            {
+                this.windDirection = windDirection;
+                this.direction = direction;
+            }
+
+            public Direction() { }
         }
 
         public static class MathHelper
@@ -51,14 +59,14 @@ namespace AoC2024.Generic
 
         public class MovingObject
         {
-            public Point position { get; set; }
+            public (int X, int Y) position { get; set; }
             public Direction direction { get; set; }
 
             public MovingObject() 
             {
-                this.position = new Point(0, 0);
+                this.position = (0, 0);
             }
-            public MovingObject(Point position, WindDirection windDirection)
+            public MovingObject((int X, int Y) position, WindDirection windDirection)
             {
                 this.position = position;
                 this.direction.windDirection = windDirection;
@@ -67,7 +75,6 @@ namespace AoC2024.Generic
             public Direction GetNextDirection()
             {
                 Direction dir = new Direction();
-                WindDirection newDirection = new WindDirection();
                 switch (this.direction.windDirection)
                 {
                     case WindDirection.N:
@@ -86,7 +93,7 @@ namespace AoC2024.Generic
                         break;
                 }
 
-                dir.direction = GetDirectionVector(newDirection);
+                dir.direction = GetDirectionVector(dir.windDirection);
 
                 return (dir);
             }
