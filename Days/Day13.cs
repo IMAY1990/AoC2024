@@ -93,7 +93,7 @@ namespace AoC2024.Days
 
         private (long aPresses, long bPresses) FindSomeSolution(Generic.HelperClasses.Machine machine)
         {
-                var determinant = machine.btnAX * machine.btnB.Y - machine.btnA.Y * machine.btnB.X;
+                var determinant = machine.btnA.X * machine.btnB.Y - machine.btnA.Y * machine.btnB.X;
                 if (determinant is 0) return (0,0);
                 var acNumerator = machine.prize.X * machine.btnB.Y - machine.prize.Y * machine.btnB.X;
                 var bcNumerator = machine.prize.Y * machine.btnA.X - machine.prize.X * machine.btnA.Y;

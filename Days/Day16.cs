@@ -35,10 +35,10 @@ namespace AoC2024.Days
             var lowestScore = int.MaxValue;
             var lowestScorePaths = new List<List<int>>();
             var visited = new Dictionary<int, int>();
-            var trailheads = new Queue<(int x, int y, Direction dir, int score, List<int> path)>();
+            var trailheads = new Queue<(int x, int y, WindDirection dir, int score, List<int> path)>();
 
-            visited[CellDirectionIndex(startX, startY, Direction.E, height)] = 0;
-            trailheads.Enqueue((startX, startY, Direction.E, 0, [CellIndex(startX, startY, height)]));
+            visited[CellDirectionIndex(startX, startY, WindDirection.E, height)] = 0;
+            trailheads.Enqueue((startX, startY, WindDirection.E, 0, [CellIndex(startX, startY, height)]));
 
             while (trailheads.Count > 0)
             {
@@ -53,22 +53,22 @@ namespace AoC2024.Days
             return returnLowestScore ? lowestScore : lowestScorePaths.SelectMany(p => p).Distinct().Count() + 1; // +1 for E
         }
 
-        private static int CellDirectionIndex(int x, int y, Direction d, int h) => y * 4 + x * h * 4 + (int)d;
+        private static int CellDirectionIndex(int x, int y, WindDirection d, int h) => y * 4 + x * h * 4 + (int)d;
 
         private static int CellIndex(int x, int y, int h) => y * h + x;
 
         private void ExtendTrail(
             int x, 
             int y, 
-            Direction dir, 
+            WindDirection dir, 
             int score, 
             List<string> kaart, 
             int height, 
             ref int lowestScore, 
             List<List<int>>? lowestScorePaths, 
             Dictionary<int, int>? visited, 
-            Queue<(int x, int y, Direction dir, int score, List<int> path)>? trailheads, 
-            (int x, int y, Direction dir, int score, List<int> path) trail)
+            Queue<(int x, int y, WindDirection dir, int score, List<int> path)>? trailheads, 
+            (int x, int y, WindDirection dir, int score, List<int> path) trail)
         {
             var c = kaart[y][x];
 
@@ -92,7 +92,7 @@ namespace AoC2024.Days
         }
 
         private void TrailDirectionChange(
-            (int x, int y, Direction dir, int score, List<int> path) trail, 
+            (int x, int y, WindDirection dir, int score, List<int> path) trail, 
             out int dxcc, 
             out int dycc, 
             out int dx, 
@@ -102,7 +102,7 @@ namespace AoC2024.Days
         {
             switch (trail.dir)
             {
-                case Direction.N:
+                case WindDirection.N:
                     dxcc = -1;
                     dycc = 0;
                     dx = 0;
@@ -110,7 +110,7 @@ namespace AoC2024.Days
                     dxc = 1;
                     dyc = 0;
                     break;
-                case Direction.E:
+                case WindDirection.E:
                     dxcc = 0;
                     dycc = -1;
                     dx = 1;
@@ -118,7 +118,7 @@ namespace AoC2024.Days
                     dxc = 0;
                     dyc = 1;
                     break;
-                case Direction.S:
+                case WindDirection.S:
                     dxcc = 1;
                     dycc = 0;
                     dx = 0;
@@ -126,7 +126,7 @@ namespace AoC2024.Days
                     dxc = -1;
                     dyc = 0;
                     break;
-                case Direction.W:
+                case WindDirection.W:
                     dxcc = 0;
                     dycc = 1;
                     dx = -1;
@@ -145,13 +145,13 @@ namespace AoC2024.Days
             }
         }
 
-        Direction RotateClock90(Direction d) 
+        WindDirection RotateClock90(WindDirection d) 
         { 
-            return (Direction)(((int)d + 1) % 4);
+            return (WindDirection)(((int)d + 1) % 4);
         }
-        Direction RotateAntiClock90(Direction d)
+        WindDirection RotateAntiClock90(WindDirection d)
         {
-            return (Direction)((((int)d - 1) % 4 + 4) % 4);
+            return (WindDirection)((((int)d - 1) % 4 + 4) % 4);
         }
         (int sx, int sy) GetStart()
         {

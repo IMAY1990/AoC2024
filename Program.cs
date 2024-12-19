@@ -53,12 +53,39 @@ namespace AoC2024
                     day = new Day13(dayNr);
                     break;
                 case 14:
-                    //day = new Day14(dayNr);
+                    day = new Day14(dayNr);
                     break;
                 case 15:
-                    //day = new Day15(dayNr);
+                    day = new Day15(dayNr);
                     break;
                 case 16:
+                    day = new Day16(dayNr);
+                    break;
+                case 17:
+                    day = new Day17(dayNr);
+                    break;
+                case 18:
+                    day = new Day18(dayNr);
+                    break;
+                case 19:
+                    day = new Day19(dayNr);
+                    break;
+                case 20:
+                    day = new Day20(dayNr);
+                    break;
+                case 21:
+                    day = new Day16(dayNr);
+                    break;
+                case 22:
+                    day = new Day16(dayNr);
+                    break;
+                case 23:
+                    day = new Day16(dayNr);
+                    break;
+                case 24:
+                    day = new Day16(dayNr);
+                    break;
+                case 25:
                     day = new Day16(dayNr);
                     break;
                 default:

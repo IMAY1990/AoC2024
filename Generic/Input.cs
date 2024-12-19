@@ -14,6 +14,11 @@ namespace AoC2024.Generic
 
         private string fileName;
 
+        internal Input()
+        {
+
+        }
+
         internal Input(int day)
         {
             this.dayNr = day;
