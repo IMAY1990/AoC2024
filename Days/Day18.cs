@@ -20,7 +20,7 @@ namespace AoC2024.Days
         public override void DoPart1()
         {
             GetKaart();
-            GetStepsToExit();
+            Maps.GetStepsToExit(kaart);
         }
 
         public override void DoPart2()
@@ -30,7 +30,7 @@ namespace AoC2024.Days
                 Point toCorrupt = GetCoords(input.Rows[i], 1);
                 AddCorruption(toCorrupt);
 
-                if (!GetStepsToExit())
+                if (!Maps.GetStepsToExit(kaart).foundEnd)
                 {
                     Console.WriteLine($"One corruption too many at {toCorrupt.X - 1},{toCorrupt.Y - 1}");
                     break;
@@ -68,50 +68,6 @@ namespace AoC2024.Days
                 Console.WriteLine(kaart[i]);
             }
         }
-        private bool GetStepsToExit()
-        {
-            Dictionary<(int X, int Y), int> reachableInSteps = new Dictionary<(int X, int Y), int>();
-            int startX = 0; int startY = 0;
-            (startX, startY) = GetStart(kaart);
-            int endX = 0; int endY = 0;
-            (endX, endY) = GetEnd(kaart);
-
-            reachableInSteps.Add((startX, startY), 0);
-            bool foundEnd = false;
-            bool addedCoords = true;
-            int steps = 0;
-            while (!foundEnd && addedCoords)
-            {
-                addedCoords = false;
-                List<(int X, int Y)> nextReachable = new List<(int X, int Y)>();
-                foreach (var current in reachableInSteps.Where(x => x.Value == steps))
-                {
-                    List<(int X, int Y)> reachableList = GetSurroundingReachable(current.Key, kaart);
-                    nextReachable.AddRange(reachableList);
-
-                }
-
-                foreach (var reachable in nextReachable)
-                {
-                    if (!reachableInSteps.ContainsKey(reachable))
-                    {
-                        addedCoords = true;
-                        reachableInSteps.Add(reachable, steps + 1);
-                    }
-                }
-
-                if (reachableInSteps.ContainsKey((endX, endY)))
-                {
-                    foundEnd = true;
-                    Console.WriteLine($"End reached in {reachableInSteps[(endX, endY)]} steps");
-                }
-                steps++;
-            }
-
-            Console.WriteLine($"End found: {foundEnd}");
-
-            return foundEnd;
-        }
 
         private void AddCorruption(Point toCorrupt)
         {
@@ -129,57 +85,5 @@ namespace AoC2024.Days
             return new StringBuilder(startRow) { [index] = newChar }.ToString();
         }
 
-        (int sx, int sy) GetStart(List<string> kaart)
-        {
-            int sx = 0, sy = 0;
-            for (int j = 0; j < kaart.Count; j++)
-            {
-                var x = kaart[j].IndexOf('S');
-                if (x != -1)
-                {
-                    (sx, sy) = (x, j);
-                    break;
-                }
-            }
-            return (sx, sy);
-        }
-
-        (int sx, int sy) GetEnd(List<string> kaart)
-        {
-            int sx = 0, sy = 0;
-            for (int j = 0; j < kaart.Count; j++)
-            {
-                var x = kaart[j].IndexOf('E');
-                if (x != -1)
-                {
-                    (sx, sy) = (x, j);
-                    break;
-                }
-            }
-            return (sx, sy);
-        }
-
-        List<(int X, int Y)> GetSurroundingReachable((int X, int Y) current, List<string> kaart)
-        {
-            List<(int X, int Y)> surroundingReachable = new List<(int X, int Y)> ();
-            if (kaart[current.Y][current.X - 1] == '.' || kaart[current.Y][current.X - 1] == 'E')
-            {
-                surroundingReachable.Add((current.X - 1, current.Y));
-            }
-            if (kaart[current.Y][current.X + 1] == '.' || kaart[current.Y][current.X + 1] == 'E')
-            {
-                surroundingReachable.Add((current.X + 1, current.Y));
-            }
-            if (kaart[current.Y - 1][current.X] == '.' || kaart[current.Y - 1][current.X] == 'E')
-            {
-                surroundingReachable.Add((current.X, current.Y - 1));
-            }
-            if (kaart[current.Y + 1][current.X] == '.' || kaart[current.Y + 1][current.X] == 'E')
-            {
-                surroundingReachable.Add((current.X, current.Y + 1));
-            }
-
-            return surroundingReachable;
-        }
     }
 }

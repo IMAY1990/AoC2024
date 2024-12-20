@@ -117,5 +117,91 @@ namespace AoC2024.Generic
                 return (0, 0);
             }
         }
+
+        public static class Maps
+        {
+            public static (int sx, int sy) GetLocationOfChar(List<string> kaart, char character)
+            {
+                int sx = 0, sy = 0;
+                for (int j = 0; j < kaart.Count; j++)
+                {
+                    var x = kaart[j].IndexOf(character);
+                    if (x != -1)
+                    {
+                        (sx, sy) = (x, j);
+                        break;
+                    }
+                }
+                return (sx, sy);
+            }
+
+            public static List<(int X, int Y)> GetSurroundingReachable((int X, int Y) current, List<string> kaart, char endCharacter)
+            {
+                List<(int X, int Y)> surroundingReachable = new List<(int X, int Y)>();
+                if (kaart[current.Y][current.X - 1] == '.' || kaart[current.Y][current.X - 1] == endCharacter)
+                {
+                    surroundingReachable.Add((current.X - 1, current.Y));
+                }
+                if (kaart[current.Y][current.X + 1] == '.' || kaart[current.Y][current.X + 1] == endCharacter)
+                {
+                    surroundingReachable.Add((current.X + 1, current.Y));
+                }
+                if (kaart[current.Y - 1][current.X] == '.' || kaart[current.Y - 1][current.X] == endCharacter)
+                {
+                    surroundingReachable.Add((current.X, current.Y - 1));
+                }
+                if (kaart[current.Y + 1][current.X] == '.' || kaart[current.Y + 1][current.X] == endCharacter)
+                {
+                    surroundingReachable.Add((current.X, current.Y + 1));
+                }
+
+                return surroundingReachable;
+            }
+
+            public static (bool foundEnd, Dictionary<(int X, int Y), int> reachableInSteps) GetStepsToExit(List<string> kaart)
+            {
+                Dictionary<(int X, int Y), int> reachableInSteps = new Dictionary<(int X, int Y), int>();
+                int startX = 0; int startY = 0;
+                (startX, startY) = Maps.GetLocationOfChar(kaart, 'S');
+                int endX = 0; int endY = 0;
+                (endX, endY) = Maps.GetLocationOfChar(kaart, 'E');
+
+                reachableInSteps.Add((startX, startY), 0);
+                bool foundEnd = false;
+                bool addedCoords = true;
+                int steps = 0;
+                while (!foundEnd && addedCoords)
+                {
+                    addedCoords = false;
+                    List<(int X, int Y)> nextReachable = new List<(int X, int Y)>();
+                    foreach (var current in reachableInSteps.Where(x => x.Value == steps))
+                    {
+                        List<(int X, int Y)> reachableList = Maps.GetSurroundingReachable(current.Key, kaart, 'E');
+                        nextReachable.AddRange(reachableList);
+
+                    }
+
+                    foreach (var reachable in nextReachable)
+                    {
+                        if (!reachableInSteps.ContainsKey(reachable))
+                        {
+                            addedCoords = true;
+                            reachableInSteps.Add(reachable, steps + 1);
+                        }
+                    }
+
+                    if (reachableInSteps.ContainsKey((endX, endY)))
+                    {
+                        foundEnd = true;
+                        Console.WriteLine($"End reached in {reachableInSteps[(endX, endY)]} steps");
+                    }
+                    steps++;
+                }
+
+                Console.WriteLine($"End found: {foundEnd}");
+
+                return (foundEnd, reachableInSteps);
+            }
+        }
     }
 }

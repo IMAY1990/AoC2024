@@ -74,16 +74,16 @@ namespace AoC2024
                     day = new Day20(dayNr);
                     break;
                 case 21:
-                    day = new Day16(dayNr);
+                    day = new Day21(dayNr);
                     break;
                 case 22:
-                    day = new Day16(dayNr);
+                    day = new Day22(dayNr);
                     break;
                 case 23:
-                    day = new Day16(dayNr);
+                    day = new Day23(dayNr);
                     break;
                 case 24:
-                    day = new Day16(dayNr);
+                    day = new Day24(dayNr);
                     break;
                 case 25:
                     day = new Day16(dayNr);

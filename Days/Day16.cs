@@ -30,7 +30,7 @@ namespace AoC2024.Days
         {
             var height = kaart.Count;
             int startX = 0, startY = 0;
-            (startX, startY) = GetStart();
+            (startX, startY) = Maps.GetLocationOfChar(kaart, 'S');
 
             var lowestScore = int.MaxValue;
             var lowestScorePaths = new List<List<int>>();
@@ -152,20 +152,6 @@ namespace AoC2024.Days
         WindDirection RotateAntiClock90(WindDirection d)
         {
             return (WindDirection)((((int)d - 1) % 4 + 4) % 4);
-        }
-        (int sx, int sy) GetStart()
-        {
-            int sx = 0, sy = 0;
-            for (int j = 0; j < input.Rows.Count; j++)
-            {
-                var x = input.Rows[j].IndexOf('S');
-                if (x != -1)
-                {
-                    (sx, sy) = (x, j);
-                    break;
-                }
-            }
-            return (sx, sy);
         }
 
     }
